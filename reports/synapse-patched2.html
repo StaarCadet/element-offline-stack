@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      h1 {
+        text-align: center;
+      }
+      .group-header th {
+        font-size: 200%;
+      }
+      .sub-header th {
+        font-size: 150%;
+      }
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        white-space: nowrap;
+        padding: .3em;
+      }
+      table {
+        margin: 0 auto;
+      }
+      .severity {
+        text-align: center;
+        font-weight: bold;
+        color: #fafafa;
+      }
+      .severity-LOW .severity { background-color: #5fbb31; }
+      .severity-MEDIUM .severity { background-color: #e9c600; }
+      .severity-HIGH .severity { background-color: #ff8800; }
+      .severity-CRITICAL .severity { background-color: #e40000; }
+      .severity-UNKNOWN .severity { background-color: #747474; }
+      .severity-LOW { background-color: #5fbb3160; }
+      .severity-MEDIUM { background-color: #e9c60060; }
+      .severity-HIGH { background-color: #ff880060; }
+      .severity-CRITICAL { background-color: #e4000060; }
+      .severity-UNKNOWN { background-color: #74747460; }
+      table tr td:first-of-type {
+        font-weight: bold;
+      }
+      .links a,
+      .links[data-more-links=on] a {
+        display: block;
+      }
+      .links[data-more-links=off] a:nth-of-type(1n+5) {
+        display: none;
+      }
+      a.toggle-more-links { cursor: pointer; }
+    </style>
+    <title>synapse-patched2.tar (debian 12.10) - Trivy Report - 2025-04-24 15:35:46.552075319 -0400 EDT m=+25.304131491 </title>
+    <script>
+      window.onload = function() {
+        document.querySelectorAll('td.links').forEach(function(linkCell) {
+          var links = [].concat.apply([], linkCell.querySelectorAll('a'));
+          [].sort.apply(links, function(a, b) {
+            return a.href > b.href ? 1 : -1;
+          });
+          links.forEach(function(link, idx) {
+            if (links.length > 3 && 3 === idx) {
+              var toggleLink = document.createElement('a');
+              toggleLink.innerText = "Toggle more links";
+              toggleLink.href = "#toggleMore";
+              toggleLink.setAttribute("class", "toggle-more-links");
+              linkCell.appendChild(toggleLink);
+            }
+            linkCell.appendChild(link);
+          });
+        });
+        document.querySelectorAll('a.toggle-more-links').forEach(function(toggleLink) {
+          toggleLink.onclick = function() {
+            var expanded = toggleLink.parentElement.getAttribute("data-more-links");
+            toggleLink.parentElement.setAttribute("data-more-links", "on" === expanded ? "off" : "on");
+            return false;
+          };
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <h1>synapse-patched2.tar (debian 12.10) - Trivy Report - 2025-04-24 15:35:46.553574703 -0400 EDT m=+25.305630977</h1>
+    <table>
+      <tr class="group-header"><th colspan="6">debian</th></tr>
+      <tr class="sub-header">
+        <th>Package</th>
+        <th>Vulnerability ID</th>
+        <th>Severity</th>
+        <th>Installed Version</th>
+        <th>Fixed Version</th>
+        <th>Links</th>
+      </tr>
+      <tr class="severity-HIGH">
+        <td class="pkg-name">perl-base</td>
+        <td>CVE-2024-56406</td>
+        <td class="severity">HIGH</td>
+        <td class="pkg-version">5.36.0-7+deb12u1</td>
+        <td>5.36.0-7+deb12u2</td>
+        <td class="links" data-more-links="off">
+          <a href="http://www.openwall.com/lists/oss-security/2025/04/13/3">http://www.openwall.com/lists/oss-security/2025/04/13/3</a>
+          <a href="http://www.openwall.com/lists/oss-security/2025/04/13/4">http://www.openwall.com/lists/oss-security/2025/04/13/4</a>
+          <a href="http://www.openwall.com/lists/oss-security/2025/04/13/5">http://www.openwall.com/lists/oss-security/2025/04/13/5</a>
+          <a href="https://access.redhat.com/security/cve/CVE-2024-56406">https://access.redhat.com/security/cve/CVE-2024-56406</a>
+          <a href="https://github.com/Perl/perl5/commit/87f42aa0e0096e9a346c9672aa3a0bd3bef8c1dd.patch">https://github.com/Perl/perl5/commit/87f42aa0e0096e9a346c9672aa3a0bd3bef8c1dd.patch</a>
+          <a href="https://metacpan.org/release/SHAY/perl-5.38.4/changes">https://metacpan.org/release/SHAY/perl-5.38.4/changes</a>
+          <a href="https://metacpan.org/release/SHAY/perl-5.40.2/changes">https://metacpan.org/release/SHAY/perl-5.40.2/changes</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-56406">https://nvd.nist.gov/vuln/detail/CVE-2024-56406</a>
+          <a href="https://ubuntu.com/security/notices/USN-7434-1">https://ubuntu.com/security/notices/USN-7434-1</a>
+          <a href="https://ubuntu.com/security/notices/USN-7434-2">https://ubuntu.com/security/notices/USN-7434-2</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2024-56406">https://www.cve.org/CVERecord?id=CVE-2024-56406</a>
+        </td>
+      </tr>
+      <tr><th colspan="6">No Misconfigurations found</th></tr>
+      <tr class="group-header"><th colspan="6">python-pkg</th></tr>
+      <tr class="sub-header">
+        <th>Package</th>
+        <th>Vulnerability ID</th>
+        <th>Severity</th>
+        <th>Installed Version</th>
+        <th>Fixed Version</th>
+        <th>Links</th>
+      </tr>
+      <tr class="severity-LOW">
+        <td class="pkg-name">cryptography</td>
+        <td>CVE-2024-12797</td>
+        <td class="severity">LOW</td>
+        <td class="pkg-version">43.0.3</td>
+        <td>44.0.1</td>
+        <td class="links" data-more-links="off">
+          <a href="http://www.openwall.com/lists/oss-security/2025/02/11/3">http://www.openwall.com/lists/oss-security/2025/02/11/3</a>
+          <a href="http://www.openwall.com/lists/oss-security/2025/02/11/4">http://www.openwall.com/lists/oss-security/2025/02/11/4</a>
+          <a href="https://access.redhat.com/errata/RHSA-2025:1330">https://access.redhat.com/errata/RHSA-2025:1330</a>
+          <a href="https://access.redhat.com/security/cve/CVE-2024-12797">https://access.redhat.com/security/cve/CVE-2024-12797</a>
+          <a href="https://bugzilla.redhat.com/2342757">https://bugzilla.redhat.com/2342757</a>
+          <a href="https://errata.almalinux.org/9/ALSA-2025-1330.html">https://errata.almalinux.org/9/ALSA-2025-1330.html</a>
+          <a href="https://github.com/openssl/openssl/commit/738d4f9fdeaad57660dcba50a619fafced3fd5e9">https://github.com/openssl/openssl/commit/738d4f9fdeaad57660dcba50a619fafced3fd5e9</a>
+          <a href="https://github.com/openssl/openssl/commit/798779d43494549b611233f92652f0da5328fbe7">https://github.com/openssl/openssl/commit/798779d43494549b611233f92652f0da5328fbe7</a>
+          <a href="https://github.com/openssl/openssl/commit/87ebd203feffcf92ad5889df92f90bb0ee10a699">https://github.com/openssl/openssl/commit/87ebd203feffcf92ad5889df92f90bb0ee10a699</a>
+          <a href="https://github.com/pyca/cryptography">https://github.com/pyca/cryptography</a>
+          <a href="https://github.com/pyca/cryptography/security/advisories/GHSA-79v4-65xg-pq4g">https://github.com/pyca/cryptography/security/advisories/GHSA-79v4-65xg-pq4g</a>
+          <a href="https://linux.oracle.com/cve/CVE-2024-12797.html">https://linux.oracle.com/cve/CVE-2024-12797.html</a>
+          <a href="https://linux.oracle.com/errata/ELSA-2025-1330.html">https://linux.oracle.com/errata/ELSA-2025-1330.html</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-12797">https://nvd.nist.gov/vuln/detail/CVE-2024-12797</a>
+          <a href="https://openssl-library.org/news/secadv/20250211.txt">https://openssl-library.org/news/secadv/20250211.txt</a>
+          <a href="https://security.netapp.com/advisory/ntap-20250214-0001/">https://security.netapp.com/advisory/ntap-20250214-0001/</a>
+          <a href="https://ubuntu.com/security/notices/USN-7264-1">https://ubuntu.com/security/notices/USN-7264-1</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2024-12797">https://www.cve.org/CVERecord?id=CVE-2024-12797</a>
+        </td>
+      </tr>
+      <tr><th colspan="6">No Misconfigurations found</th></tr>
+      <tr class="group-header"><th colspan="6">gobinary</th></tr>
+      <tr><th colspan="6">No Vulnerabilities found</th></tr>
+      <tr><th colspan="6">No Misconfigurations found</th></tr>
+    </table>
+  </body>
+</html>

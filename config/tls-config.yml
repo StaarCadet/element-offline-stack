@@ -1,0 +1,44 @@
+#WILDCARD CERTIFICATE
+tls:
+  stores:
+    default:
+      defaultCertificate:
+          certFile: "/traefik/config/certs/wildcard_crt.pem"
+          keyFile: "/traefik/config/certs/wildcard_key.pem"
+  options:
+    modern:
+      minVersion: 'VersionTLS13'
+    intermediate:
+      minVersion: 'VersionTLS12'
+      cipherSuites:
+        - 'TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256'
+        - 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256'
+        - 'TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384'
+        - 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384'
+        - 'TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305'
+        - 'TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305'
+#PER-SERVER CERTIFICATES
+#tls:
+#  certificates:
+#    - certFile: "/traefik/config/certs/jira_cert.pem"
+#      keyFile: "/traefik/config/certs/jira_key.pem"
+#    - certFile: "/traefik/config/certs/confluence_cert.pem"
+#      keyFile: "/traefik/config/certs/confluence_key.pem"
+#    - certFile: "/traefik/config/certs/gitlab_cert.pem"
+#      keyFile: "/traefik/config/certs/gitlab_key.pem"
+#    - certFile: "/traefik/config/certs/other_cert.pem"
+#      keyFile: "/traefik/config/certs/other_key.pem"
+global:
+  sendAnonymousUsage: false
+log:
+  level: DEBUG
+# FOR LIVEKIT
+entryPoints:
+  livekit-tcp-7880:
+    address: ":7880"
+  livekit-tcp-7881:
+    address: ":7881"
+  livekit-tcp-7882:
+    address: ":7882"
+  livekit-udp:
+    address: ":50100-50200/udp"

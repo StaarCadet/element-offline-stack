@@ -1,0 +1,386 @@
+version: '3'
+
+networks:
+  call_ecbackend:
+    external: true
+  call_proxy:
+    external: true
+
+volumes:
+  synapse:
+    external: true
+  postgres:
+    external: true
+  database:
+    external: true
+  redis:
+    external: true
+
+services:
+  auth-service:
+    image: ghcr.io/element-hq/lk-jwt-service:latest-ci
+    #hostname: auth-server
+    container_name: jwt
+    environment:
+      - LK_JWT_PORT=8080
+      - LIVEKIT_URL=https://livekit.${DOMAIN_NAME}/livekit/sfu
+      # If the configured homeserver runs on localhost, it'll probably be using
+      # a self-signed certificate
+      - LIVEKIT_INSECURE_SKIP_VERIFY_TLS=YES_I_KNOW_WHAT_I_AM_DOING
+      - LIVEKIT_LOCAL_HOMESERVERS=${DOMAIN_NAME}
+      - LIVEKIT_KEY=${LIVEKIT_KEY:?livekit key required}
+      - LIVEKIT_SECRET=${LIVEKIT_SECRET:?livekit secret required}
+    env_file:
+      - .env
+    deploy:
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - traefik
+    #ports:
+      # HOST_PORT:CONTAINER_PORT
+      #- 8009:8080
+    networks:
+      - call_ecbackend
+      - call_proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.http-auth.entryPoints=http
+      - traefik.http.routers.http-auth.rule=Host(`auth.${DOMAIN_NAME}`)
+      - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
+      - traefik.http.routers.http-auth.middlewares=https_redirect
+      - traefik.http.routers.https-auth.entryPoints=https
+      - traefik.http.routers.https-auth.rule=Host(`auth.${DOMAIN_NAME}`)
+      - traefik.http.routers.https-auth.service=auth
+      - traefik.http.routers.https-auth.tls=true
+      - traefik.http.services.auth.loadbalancer.server.port=8080
+
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --dev --config /etc/livekit.yaml
+    restart: unless-stopped
+    container_name: livekit
+    # The SFU seems to work far more reliably when we let it share the host
+    # network rather than opening specific ports (but why?? we're not missing
+    # any…)
+#    ports:
+#      # HOST_PORT:CONTAINER_PORT
+#      - 7880:7880/tcp
+#      - 7881:7881/tcp
+#      - 7882:7882/tcp
+#      - 50100-50200:50100-50200/udp
+    volumes:
+      - ./backend/dev_livekit.yaml:/etc/livekit.yaml:rw
+    depends_on:
+      - traefik
+    networks:
+      - call_ecbackend
+      - call_proxy
+    labels:
+      - traefik.enable=true
+      - traefik.tcp.routers.livekit-tcp-7880.entryPoints=livekit-tcp-7880
+      - traefik.tcp.routers.livekit-tcp-7880.rule=HostSNI(`*`)
+      - traefik.tcp.routers.livekit-tcp-7880.service=livekit-tcp-7880
+      - traefik.tcp.services.livekit-tcp-7880.loadbalancer.server.port=7880
+      - traefik.tcp.routers.livekit-tcp-7881.entryPoints=livekit-tcp-7881
+      - traefik.tcp.routers.livekit-tcp-7881.rule=HostSNI(`*`)
+      - traefik.tcp.routers.livekit-tcp-7881.service=livekit-tcp-7881
+      - traefik.tcp.services.livekit-tcp-7881.loadbalancer.server.port=7881
+      - traefik.tcp.routers.livekit-tcp-7882.entryPoints=livekit-tcp-7882
+      - traefik.tcp.routers.livekit-tcp-7882.rule=HostSNI(`*`)
+      - traefik.tcp.routers.livekit-tcp-7882.service=livekit-tcp-7882
+      - traefik.tcp.services.livekit-tcp-7882.loadbalancer.server.port=7882
+      - traefik.udp.routers.livekit-udp.entryPoints=livekit-udp
+      - traefik.udp.routers.livekit-udp.service=livekit-udp
+      - traefik.udp.services.livekit-udp.loadbalancer.server.port=50100-50200
+
+  synapse:
+    image: docker.io/matrixdotorg/synapse:latest
+    container_name: synapse
+    #container_name: synapse
+    # Since synapse does not retry to connect to the database, restart upon
+    # failure
+    restart: unless-stopped
+    # See the readme for a full documentation of the environment settings
+    # NOTE: You must edit homeserver.yaml to use postgres, it defaults to sqlite
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+      - UID=0
+      - GID=0
+    volumes:
+      # You may either store all the files in a local folder
+      - "synapse:/data"
+      - "./backend/homeserver.yaml:/data/homeserver.yaml:rw"
+      - "./backend/homeserver.log:/data/homeserver.log:rw"
+      - "./backend/matrix.log.config:/data/matrix.log.config:rw"
+
+      #- "./resources/wildcard_crt.pem:/data/wildcard_crt.pem"
+      #- "./resources/wildcard_key.pem:/data/wildcard_key.pem"
+      # .. or you may split this between different storage points
+      # - ./files:/data
+      # - /path/to/ssd:/data/uploads
+      # - /path/to/large_hdd:/data/media
+    depends_on:
+      - traefik
+      - postgres_synapse
+    # In order to expose Synapse, remove one of the following, you might for
+    # instance expose the TLS port directly:
+    # ... or use a reverse proxy, here is an example for traefik:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.http-synapse.entryPoints=http
+      - traefik.http.routers.http-synapse.rule=Host(`matrix.${DOMAIN_NAME}`)
+      - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
+      - traefik.http.routers.http-synapse.middlewares=https_redirect
+      - traefik.http.routers.https-synapse.entryPoints=https
+      - traefik.http.routers.https-synapse.rule=Host(`matrix.${DOMAIN_NAME}`)
+      - traefik.http.routers.https-synapse.service=synapse
+      - traefik.http.routers.https-synapse.tls=true
+      - traefik.http.services.synapse.loadbalancer.server.port=8008
+    networks:
+      - call_ecbackend
+      - call_proxy
+
+  postgres_synapse:
+    image: cgr.dev/chainguard/postgres:latest
+    container_name: postgres_synapse
+    #hostname: postgres_synapse
+    # Change that password, of course!
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-synapse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?database password required}
+      POSTGRES_DB: synapse
+      PGDATA: /data/postgres
+      # ensure the database gets created correctly
+      # https://element-hq.github.io/synapse/latest/postgres.html#set-up-database
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C 
+    env_file:
+      - .env
+    volumes:
+      # You may store the database tables in a local folder..
+      - "postgres:/data/postgres"
+      # .. or store them on some high performance storage for better results
+      # - /path/to/ssd/storage:/var/lib/postgresql/data
+    networks:
+      - call_ecbackend
+  postgres_auth:
+    image: cgr.dev/chainguard/postgres:latest
+    restart: unless-stopped
+    container_name: postgres_auth
+    #hostname: postgres_auth
+    #healthcheck:
+    #  test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+    #  start_period: 20s
+    #  interval: 30s
+    #  retries: 5
+    #  timeout: 5s
+    volumes:
+      - call_database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASS:?database password required}
+      POSTGRES_USER: ${PG_USER:-authentik}
+      POSTGRES_DB: ${PG_DB:-authentik}
+    env_file:
+      - .env
+    networks:
+      - call_ecbackend
+  element:
+    image: docker.io/vectorim/element-web:latest
+    container_name: element
+    environment:
+      - ELEMENT_WEB_PORT=8085
+    volumes:
+      - ./config/config.json:/app/config.json
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.http-element.entryPoints=http
+      - traefik.http.routers.http-element.rule=Host(`element.${DOMAIN_NAME}`)
+      - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
+      - traefik.http.routers.http-element.middlewares=https_redirect
+      - traefik.http.routers.https-element.entryPoints=https
+      - traefik.http.routers.https-element.rule=Host(`element.${DOMAIN_NAME}`)
+      - traefik.http.routers.https-element.service=element
+      - traefik.http.routers.https-element.tls=true
+      - traefik.http.services.element.loadbalancer.server.port=8085
+    depends_on:
+      - traefik
+      - postgres_synapse
+      - synapse
+      - livekit
+      - auth-service
+      - redis
+    networks:
+      - call_ecbackend
+      - call_proxy
+
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    security_opt:
+      - label=disable
+    environment:
+       - TRAEFIK_GLOBAL_CHECKNEWVERSION=false
+       - TRAEFIK_GLOBAL_SENDANONYMOUSUSAGE=false
+       - TRAEFIK_ENTRYPOINTS_HTTP_ADDRESS=:80
+       - TRAEFIK_ENTRYPOINTS_HTTPS_ADDRESS=:443
+       - TRAEFIK_ENTRYPOINTS_TRAEFIK_ADDRESS=:8080
+       - TRAEFIK_API=true
+       - TRAEFIK_API_INSECURE=true
+       - TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
+       - TRAEFIK_LOG=true
+       - TRAEFIK_LOG_LEVEL=DEBUG
+       #AccessLogs
+       - TRAEFIK_ACCESSLOG=true
+       - TRAEFIK_ACCESSLOG_FILEPATH=/traefik.log
+       - TRAEFIK_ACCESSLOG_BUFFERINGSIZE=100
+       - TRAEFIK_ACCESSLOG_FILTERS_STATUSCODES=400-499
+       #Docker Provider
+       - TRAEFIK_PROVIDERS_DOCKER=true
+       - TRAEFIK_PROVIDERS_DOCKER_ENDPOINT=unix:///var/run/docker.sock
+       - TRAEFIK_PROVIDERS_DOCKER_DEFAULTRULE=Host(`{{ index .Labels "com.docker.compose.service" }}`)
+       - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
+       - TRAEFIK_PROVIDERS_DOCKER_NETWORK=call_proxy
+       #TLS Provider
+       - TRAEFIK_PROVIDERS_FILE_FILENAME=/etc/traefik/tls-config.yml
+       - TRAEFIK_PROVIDERS_FILE_WATCH=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/certs/:/traefik/config/certs:ro
+      - ./config/tls-config.yml:/etc/traefik/tls-config.yml:ro
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+      - target: 443
+        published: 443
+        protocol: tcp
+      - target: 8080
+        published: 8080
+        protocol: tcp
+      - target: 7880
+        published: 7880
+        protocol: tcp
+      - target: 7881
+        published: 7881
+        protocol: tcp
+      - target: 7882
+        published: 7882
+        protocol: tcp
+      - target: 50100-50200
+        published: 50100-50200
+        protocol: udp
+    networks:
+     - call_proxy
+    labels:
+      - "traefik.enable=true"
+      #   # HTTP-to-HTTPS Redirect
+      - "traefik.http.routers.http-catchall.entrypoints=http"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      #   # HTTP Routers
+      - "traefik.http.routers.traefik-rtr.entrypoints=https"
+      - "traefik.http.routers.traefik-rtr.rule=Host(`localhost`)"
+      - "traefik.http.routers.traefik-rtr.tls=true"
+      - "traefik.http.routers.traefik-rtr.service=api@internal"
+
+  authentik:
+    image: ghcr.io/goauthentik/server:2025.2.4
+    container_name: authentik
+    restart: unless-stopped
+    command: server
+    environment:
+      AUTHENTIK_ERROR_REPORTING__ENABLED: ${AUTHENTIK_ERROR_REPORTING__ENABLED:-false}
+      AUTHENTIK_DISABLE_STARTUP_ANALYTICS: ${AUTHENTIK_DISABLE_STARTUP_ANALYTICS:-true}
+      AUTHENTIK_DISABLE_UPDATE_CHECK: ${AUTHENTIK_DISABLE_UPDATE_CHECK:-true}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres_auth
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+    volumes:
+      - ./media:/media
+      - ./custom-templates:/templates
+    env_file:
+      - .env
+    #ports:
+    #  - "${COMPOSE_PORT_HTTP:-9000}:9000"
+    #  - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+    depends_on:
+      postgres_auth:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - call_proxy
+      - call_ecbackend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.http-authentik.entryPoints=http
+      - traefik.http.routers.http-authentik.rule=Host(`authentik.${DOMAIN_NAME}`)
+      - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
+      - traefik.http.routers.http-authentik.middlewares=https_redirect
+      - traefik.http.routers.https-authentik.entryPoints=https
+      - traefik.http.routers.https-authentik.rule=Host(`authentik.${DOMAIN_NAME}`)
+      - traefik.http.routers.https-authentik.service=authentik
+      - traefik.http.routers.https-authentik.tls=true
+      - traefik.http.services.authentik.loadbalancer.server.port=9000
+  worker:
+    image: ghcr.io/goauthentik/server:2025.2.4
+    container_name: worker
+    restart: unless-stopped
+    command: worker
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres_auth
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+    # `user: root` and the docker socket volume are optional.
+    # See more for the docker socket integration here:
+    # https://goauthentik.io/docs/outposts/integrations/docker
+    # Removing `user: root` also prevents the worker from fixing the permissions
+    # on the mounted folders, so when removing this make sure the folders have the correct UID/GID
+    # (1000:1000 by default)
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./media:/media
+      - ./config/certs:/certs
+      - ./custom-templates:/templates
+    env_file:
+      - .env
+    depends_on:
+      postgres_auth:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - call_proxy
+      - call_ecbackend
+
+  redis:
+    image: cgr.dev/chainguard/redis:latest
+    container_name: redis
+    command: 
+    - /etc/redis.conf
+    restart: unless-stopped
+    # healthcheck:
+    #   test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+    #   start_period: 20s
+    #   interval: 30s
+    #   retries: 5
+    #   timeout: 3s
+    volumes:
+      - ./backend/redis.conf:/etc/redis.conf:rw
+      - call_redis:/data
+    networks:
+      - call_ecbackend
+      - call_proxy

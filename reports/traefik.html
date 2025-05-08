@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      h1 {
+        text-align: center;
+      }
+      .group-header th {
+        font-size: 200%;
+      }
+      .sub-header th {
+        font-size: 150%;
+      }
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        white-space: nowrap;
+        padding: .3em;
+      }
+      table {
+        margin: 0 auto;
+      }
+      .severity {
+        text-align: center;
+        font-weight: bold;
+        color: #fafafa;
+      }
+      .severity-LOW .severity { background-color: #5fbb31; }
+      .severity-MEDIUM .severity { background-color: #e9c600; }
+      .severity-HIGH .severity { background-color: #ff8800; }
+      .severity-CRITICAL .severity { background-color: #e40000; }
+      .severity-UNKNOWN .severity { background-color: #747474; }
+      .severity-LOW { background-color: #5fbb3160; }
+      .severity-MEDIUM { background-color: #e9c60060; }
+      .severity-HIGH { background-color: #ff880060; }
+      .severity-CRITICAL { background-color: #e4000060; }
+      .severity-UNKNOWN { background-color: #74747460; }
+      table tr td:first-of-type {
+        font-weight: bold;
+      }
+      .links a,
+      .links[data-more-links=on] a {
+        display: block;
+      }
+      .links[data-more-links=off] a:nth-of-type(1n+5) {
+        display: none;
+      }
+      a.toggle-more-links { cursor: pointer; }
+    </style>
+    <title>traefik.tar (alpine 3.21.3) - Trivy Report - 2025-04-10 16:25:14.063026357 -0400 EDT m=+11.577550826 </title>
+    <script>
+      window.onload = function() {
+        document.querySelectorAll('td.links').forEach(function(linkCell) {
+          var links = [].concat.apply([], linkCell.querySelectorAll('a'));
+          [].sort.apply(links, function(a, b) {
+            return a.href > b.href ? 1 : -1;
+          });
+          links.forEach(function(link, idx) {
+            if (links.length > 3 && 3 === idx) {
+              var toggleLink = document.createElement('a');
+              toggleLink.innerText = "Toggle more links";
+              toggleLink.href = "#toggleMore";
+              toggleLink.setAttribute("class", "toggle-more-links");
+              linkCell.appendChild(toggleLink);
+            }
+            linkCell.appendChild(link);
+          });
+        });
+        document.querySelectorAll('a.toggle-more-links').forEach(function(toggleLink) {
+          toggleLink.onclick = function() {
+            var expanded = toggleLink.parentElement.getAttribute("data-more-links");
+            toggleLink.parentElement.setAttribute("data-more-links", "on" === expanded ? "off" : "on");
+            return false;
+          };
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <h1>traefik.tar (alpine 3.21.3) - Trivy Report - 2025-04-10 16:25:14.064143133 -0400 EDT m=+11.578667577</h1>
+    <table>
+      <tr class="group-header"><th colspan="6">alpine</th></tr>
+      <tr><th colspan="6">No Vulnerabilities found</th></tr>
+      <tr><th colspan="6">No Misconfigurations found</th></tr>
+      <tr class="group-header"><th colspan="6">gobinary</th></tr>
+      <tr class="sub-header">
+        <th>Package</th>
+        <th>Vulnerability ID</th>
+        <th>Severity</th>
+        <th>Installed Version</th>
+        <th>Fixed Version</th>
+        <th>Links</th>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">github.com/go-jose/go-jose/v4</td>
+        <td>CVE-2025-27144</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">v4.0.4</td>
+        <td>4.0.5</td>
+        <td class="links" data-more-links="off">
+          <a href="https://access.redhat.com/security/cve/CVE-2025-27144">https://access.redhat.com/security/cve/CVE-2025-27144</a>
+          <a href="https://github.com/go-jose/go-jose">https://github.com/go-jose/go-jose</a>
+          <a href="https://github.com/go-jose/go-jose/commit/99b346cec4e86d102284642c5dcbe9bb0cacfc22">https://github.com/go-jose/go-jose/commit/99b346cec4e86d102284642c5dcbe9bb0cacfc22</a>
+          <a href="https://github.com/go-jose/go-jose/releases/tag/v4.0.5">https://github.com/go-jose/go-jose/releases/tag/v4.0.5</a>
+          <a href="https://github.com/go-jose/go-jose/security/advisories/GHSA-c6gw-w398-hv78">https://github.com/go-jose/go-jose/security/advisories/GHSA-c6gw-w398-hv78</a>
+          <a href="https://github.com/golang/go/issues/71490">https://github.com/golang/go/issues/71490</a>
+          <a href="https://go.dev/issue/71490">https://go.dev/issue/71490</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-27144">https://nvd.nist.gov/vuln/detail/CVE-2025-27144</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2025-27144">https://www.cve.org/CVERecord?id=CVE-2025-27144</a>
+        </td>
+      </tr>
+      <tr class="severity-HIGH">
+        <td class="pkg-name">github.com/golang-jwt/jwt/v4</td>
+        <td>CVE-2025-30204</td>
+        <td class="severity">HIGH</td>
+        <td class="pkg-version">v4.5.1</td>
+        <td>4.5.2</td>
+        <td class="links" data-more-links="off">
+          <a href="https://access.redhat.com/errata/RHSA-2025:3344">https://access.redhat.com/errata/RHSA-2025:3344</a>
+          <a href="https://access.redhat.com/security/cve/CVE-2025-30204">https://access.redhat.com/security/cve/CVE-2025-30204</a>
+          <a href="https://bugzilla.redhat.com/2354195">https://bugzilla.redhat.com/2354195</a>
+          <a href="https://errata.almalinux.org/9/ALSA-2025-3344.html">https://errata.almalinux.org/9/ALSA-2025-3344.html</a>
+          <a href="https://github.com/golang-jwt/jwt">https://github.com/golang-jwt/jwt</a>
+          <a href="https://github.com/golang-jwt/jwt/commit/0951d184286dece21f73c85673fd308786ffe9c3">https://github.com/golang-jwt/jwt/commit/0951d184286dece21f73c85673fd308786ffe9c3</a>
+          <a href="https://github.com/golang-jwt/jwt/commit/bf316c48137a1212f8d0af9288cc9ce8e59f1afb">https://github.com/golang-jwt/jwt/commit/bf316c48137a1212f8d0af9288cc9ce8e59f1afb</a>
+          <a href="https://github.com/golang-jwt/jwt/security/advisories/GHSA-mh63-6h87-95cp">https://github.com/golang-jwt/jwt/security/advisories/GHSA-mh63-6h87-95cp</a>
+          <a href="https://linux.oracle.com/cve/CVE-2025-30204.html">https://linux.oracle.com/cve/CVE-2025-30204.html</a>
+          <a href="https://linux.oracle.com/errata/ELSA-2025-3344.html">https://linux.oracle.com/errata/ELSA-2025-3344.html</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-30204">https://nvd.nist.gov/vuln/detail/CVE-2025-30204</a>
+          <a href="https://security.netapp.com/advisory/ntap-20250404-0002">https://security.netapp.com/advisory/ntap-20250404-0002</a>
+          <a href="https://security.netapp.com/advisory/ntap-20250404-0002/">https://security.netapp.com/advisory/ntap-20250404-0002/</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2025-30204">https://www.cve.org/CVERecord?id=CVE-2025-30204</a>
+        </td>
+      </tr>
+      <tr class="severity-HIGH">
+        <td class="pkg-name">github.com/golang-jwt/jwt/v5</td>
+        <td>CVE-2025-30204</td>
+        <td class="severity">HIGH</td>
+        <td class="pkg-version">v5.2.1</td>
+        <td>5.2.2</td>
+        <td class="links" data-more-links="off">
+          <a href="https://access.redhat.com/errata/RHSA-2025:3344">https://access.redhat.com/errata/RHSA-2025:3344</a>
+          <a href="https://access.redhat.com/security/cve/CVE-2025-30204">https://access.redhat.com/security/cve/CVE-2025-30204</a>
+          <a href="https://bugzilla.redhat.com/2354195">https://bugzilla.redhat.com/2354195</a>
+          <a href="https://errata.almalinux.org/9/ALSA-2025-3344.html">https://errata.almalinux.org/9/ALSA-2025-3344.html</a>
+          <a href="https://github.com/golang-jwt/jwt">https://github.com/golang-jwt/jwt</a>
+          <a href="https://github.com/golang-jwt/jwt/commit/0951d184286dece21f73c85673fd308786ffe9c3">https://github.com/golang-jwt/jwt/commit/0951d184286dece21f73c85673fd308786ffe9c3</a>
+          <a href="https://github.com/golang-jwt/jwt/commit/bf316c48137a1212f8d0af9288cc9ce8e59f1afb">https://github.com/golang-jwt/jwt/commit/bf316c48137a1212f8d0af9288cc9ce8e59f1afb</a>
+          <a href="https://github.com/golang-jwt/jwt/security/advisories/GHSA-mh63-6h87-95cp">https://github.com/golang-jwt/jwt/security/advisories/GHSA-mh63-6h87-95cp</a>
+          <a href="https://linux.oracle.com/cve/CVE-2025-30204.html">https://linux.oracle.com/cve/CVE-2025-30204.html</a>
+          <a href="https://linux.oracle.com/errata/ELSA-2025-3344.html">https://linux.oracle.com/errata/ELSA-2025-3344.html</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-30204">https://nvd.nist.gov/vuln/detail/CVE-2025-30204</a>
+          <a href="https://security.netapp.com/advisory/ntap-20250404-0002">https://security.netapp.com/advisory/ntap-20250404-0002</a>
+          <a href="https://security.netapp.com/advisory/ntap-20250404-0002/">https://security.netapp.com/advisory/ntap-20250404-0002/</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2025-30204">https://www.cve.org/CVERecord?id=CVE-2025-30204</a>
+        </td>
+      </tr>
+      <tr class="severity-LOW">
+        <td class="pkg-name">github.com/redis/go-redis/v9</td>
+        <td>CVE-2025-29923</td>
+        <td class="severity">LOW</td>
+        <td class="pkg-version">v9.6.1</td>
+        <td>9.7.3, 9.6.3, 9.5.5</td>
+        <td class="links" data-more-links="off">
+          <a href="https://access.redhat.com/security/cve/CVE-2025-29923">https://access.redhat.com/security/cve/CVE-2025-29923</a>
+          <a href="https://github.com/redis/go-redis">https://github.com/redis/go-redis</a>
+          <a href="https://github.com/redis/go-redis/commit/d236865b0cfa1b752ea4b7da666b1fdcd0acebb6">https://github.com/redis/go-redis/commit/d236865b0cfa1b752ea4b7da666b1fdcd0acebb6</a>
+          <a href="https://github.com/redis/go-redis/pull/3295">https://github.com/redis/go-redis/pull/3295</a>
+          <a href="https://github.com/redis/go-redis/security/advisories/GHSA-92cp-5422-2mw7">https://github.com/redis/go-redis/security/advisories/GHSA-92cp-5422-2mw7</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-29923">https://nvd.nist.gov/vuln/detail/CVE-2025-29923</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2025-29923">https://www.cve.org/CVERecord?id=CVE-2025-29923</a>
+        </td>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">golang.org/x/net</td>
+        <td>CVE-2025-22870</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">v0.33.0</td>
+        <td>0.36.0</td>
+        <td class="links" data-more-links="off">
+          <a href="http://www.openwall.com/lists/oss-security/2025/03/07/2">http://www.openwall.com/lists/oss-security/2025/03/07/2</a>
+          <a href="https://access.redhat.com/security/cve/CVE-2025-22870">https://access.redhat.com/security/cve/CVE-2025-22870</a>
+          <a href="https://go-review.googlesource.com/q/project:net">https://go-review.googlesource.com/q/project:net</a>
+          <a href="https://go.dev/cl/654697">https://go.dev/cl/654697</a>
+          <a href="https://go.dev/issue/71984">https://go.dev/issue/71984</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-22870">https://nvd.nist.gov/vuln/detail/CVE-2025-22870</a>
+          <a href="https://pkg.go.dev/vuln/GO-2025-3503">https://pkg.go.dev/vuln/GO-2025-3503</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2025-22870">https://www.cve.org/CVERecord?id=CVE-2025-22870</a>
+        </td>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">stdlib</td>
+        <td>CVE-2025-22866</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">v1.23.5</td>
+        <td>1.22.12, 1.23.6, 1.24.0-rc.3</td>
+        <td class="links" data-more-links="off">
+          <a href="https://access.redhat.com/security/cve/CVE-2025-22866">https://access.redhat.com/security/cve/CVE-2025-22866</a>
+          <a href="https://go.dev/cl/643735">https://go.dev/cl/643735</a>
+          <a href="https://go.dev/issue/71383">https://go.dev/issue/71383</a>
+          <a href="https://groups.google.com/g/golang-announce/c/xU1ZCHUZw3k">https://groups.google.com/g/golang-announce/c/xU1ZCHUZw3k</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-22866">https://nvd.nist.gov/vuln/detail/CVE-2025-22866</a>
+          <a href="https://pkg.go.dev/vuln/GO-2025-3447">https://pkg.go.dev/vuln/GO-2025-3447</a>
+          <a href="https://security.netapp.com/advisory/ntap-20250221-0002/">https://security.netapp.com/advisory/ntap-20250221-0002/</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2025-22866">https://www.cve.org/CVERecord?id=CVE-2025-22866</a>
+        </td>
+      </tr>
+      <tr class="severity-MEDIUM">
+        <td class="pkg-name">stdlib</td>
+        <td>CVE-2025-22871</td>
+        <td class="severity">MEDIUM</td>
+        <td class="pkg-version">v1.23.5</td>
+        <td>1.23.8, 1.24.2</td>
+        <td class="links" data-more-links="off">
+          <a href="http://www.openwall.com/lists/oss-security/2025/04/04/4">http://www.openwall.com/lists/oss-security/2025/04/04/4</a>
+          <a href="https://access.redhat.com/security/cve/CVE-2025-22871">https://access.redhat.com/security/cve/CVE-2025-22871</a>
+          <a href="https://go.dev/cl/652998">https://go.dev/cl/652998</a>
+          <a href="https://go.dev/issue/71988">https://go.dev/issue/71988</a>
+          <a href="https://groups.google.com/g/golang-announce/c/Y2uBTVKjBQk">https://groups.google.com/g/golang-announce/c/Y2uBTVKjBQk</a>
+          <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-22871">https://nvd.nist.gov/vuln/detail/CVE-2025-22871</a>
+          <a href="https://pkg.go.dev/vuln/GO-2025-3563">https://pkg.go.dev/vuln/GO-2025-3563</a>
+          <a href="https://www.cve.org/CVERecord?id=CVE-2025-22871">https://www.cve.org/CVERecord?id=CVE-2025-22871</a>
+        </td>
+      </tr>
+      <tr><th colspan="6">No Misconfigurations found</th></tr>
+    </table>
+  </body>
+</html>
